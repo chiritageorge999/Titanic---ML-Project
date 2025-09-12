@@ -31,3 +31,24 @@ all_data = pd.concat([training,test])
 %matplotlib inline
 all_data.columns
 ```
+Project Planning
+When starting a new project, I like to outline the steps I plan on taking.
+Below is a rough outline.
+
+* Understand the data .info() .describe()
+* Histograms and boxplots
+* Value counts
+* Missing data
+* Correlation between the metrics
+* Explore interesting themes
+   * Wealthy survive?
+   * By location
+   * Age scatterplot with ticket price
+   * Young and wealthy Variable?
+   * Total spent?
+* Feature engineering
+* Preprocess the data
+   * Use labels for training and testing
+* Model baseline
+* Model comparison
+  
