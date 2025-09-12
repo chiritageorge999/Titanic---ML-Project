@@ -68,7 +68,8 @@ Below is a rough outline.
 training.info()
 ```
 ```
-# to better understand the numeric data, I'll use the .describe() method. This gives me an understanding of the central tendencies of the data 
+# to better understand the numeric data, I'll use the .describe() method.
+# This gives me an understanding of the central tendencies of the data 
 training.describe()
 ```
 ```
