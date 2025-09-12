@@ -89,8 +89,25 @@ for i in df_num.columns:
     plt.show()
 ```
 
+```
+# compare survival rate across Age, SibSp, Parch, and Fare 
+pd.pivot_table(training, index = 'Survived', values = ['Age','SibSp','Parch','Fare'])
+```
+```
+for i in df_cat.columns:
+    sns.barplot(df_cat[i].value_counts().index,df_cat[i].value_counts()).set_title(i)
+    plt.show()\
+```
+Cabin and ticket graphs are very messy. This is an area where I will do some feature engineering.
 
-
+```
+# Comparing survival and each of these categorical variables 
+print(pd.pivot_table(training, index = 'Survived', columns = 'Pclass', values = 'Ticket' ,aggfunc ='count'))
+print()
+print(pd.pivot_table(training, index = 'Survived', columns = 'Sex', values = 'Ticket' ,aggfunc ='count'))
+print()
+print(pd.pivot_table(training, index = 'Survived', columns = 'Embarked', values = 'Ticket' ,aggfunc ='count'))
+```
 
 
 
