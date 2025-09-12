@@ -41,7 +41,7 @@ Below is a rough outline.
 * Missing data
 * Correlation between the metrics
 * Explore interesting themes
-   * Wealthy survive?
+   * Will the wealthy survive?
    * By location
    * Age scatterplot with ticket price
    * Young and wealthy Variable?
@@ -51,4 +51,54 @@ Below is a rough outline.
    * Use labels for training and testing
 * Model baseline
 * Model comparison
+
+  Data Exploration
   
+1. For numeric data 
+  * Histograms to understand distributions
+  * Corrplot
+  * Pivot table comparing survival rate across numeric variables
+
+2. For categorical data
+  * Bar charts to understand the balance of classes
+  * Pivot tables to understand the relationship with survival
+
+```
+#quick look at our data types & null counts 
+training.info()
+```
+```
+# to better understand the numeric data, I'll use the .describe() method. This gives me an understanding of the central tendencies of the data 
+training.describe()
+```
+```
+#quick way to separate numeric columns
+training.describe().columns
+```
+```
+# look at numeric and categorical values separately 
+df_num = training[['Age','SibSp','Parch','Fare']]
+df_cat = training[['Survived','Pclass','Sex','Ticket','Cabin','Embarked']]
+```
+```
+#distributions for all numeric variables 
+for i in df_num.columns:
+    plt.hist(df_num[i])
+    plt.title(i)
+    plt.show()
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
