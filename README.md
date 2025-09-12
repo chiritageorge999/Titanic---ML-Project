@@ -349,6 +349,134 @@ After getting the baselines, let's see if we can improve on the individual model
 | Support Vector Classifier| 83.2%    | 83.2%             |
 | Xtreme Gradient Boosting | 81.8%    | 85.3%             |
 
+```
+from sklearn.model_selection import GridSearchCV 
+from sklearn.model_selection import RandomizedSearchCV
+```
+```
+#performance reporting function
+def clf_performance(classifier, model_name):
+    print(model_name)
+    print('Best Score: ' + str(classifier.best_score_))
+    print('Best Parameters: ' + str(classifier.best_params_))
+```
+```
+lr = LogisticRegression()
+param_grid = {'max_iter' : [2000],
+              'penalty' : ['l1', 'l2'],
+              'C' : np.logspace(-4, 4, 20),
+              'solver' : ['liblinear']}
+
+clf_lr = GridSearchCV(lr, param_grid = param_grid, cv = 5, verbose = True, n_jobs = -1)
+best_clf_lr = clf_lr.fit(X_train_scaled,y_train)
+clf_performance(best_clf_lr,'Logistic Regression')
+```
+```
+knn = KNeighborsClassifier()
+param_grid = {'n_neighbors' : [3,5,7,9],
+              'weights' : ['uniform', 'distance'],
+              'algorithm' : ['auto', 'ball_tree','kd_tree'],
+              'p' : [1,2]}
+clf_knn = GridSearchCV(knn, param_grid = param_grid, cv = 5, verbose = True, n_jobs = -1)
+best_clf_knn = clf_knn.fit(X_train_scaled,y_train)
+clf_performance(best_clf_knn,'KNN')
+```
+```
+svc = SVC(probability = True)
+param_grid = tuned_parameters = [{'kernel': ['rbf'], 'gamma': [.1,.5,1,2,5,10],
+                                  'C': [.1, 1, 10, 100, 1000]},
+                                 {'kernel': ['linear'], 'C': [.1, 1, 10, 100, 1000]},
+                                 {'kernel': ['poly'], 'degree' : [2,3,4,5], 'C': [.1, 1, 10, 100, 1000]}]
+clf_svc = GridSearchCV(svc, param_grid = param_grid, cv = 5, verbose = True, n_jobs = -1)
+best_clf_svc = clf_svc.fit(X_train_scaled,y_train)
+clf_performance(best_clf_svc,'SVC')
+```
+```
+#Because the total feature space is so large, I used a randomized search to narrow down the paramters for the model. I took the best model from this and did a more granular search 
+"""
+rf = RandomForestClassifier(random_state = 1)
+param_grid =  {'n_estimators': [100,500,1000], 
+                                  'bootstrap': [True,False],
+                                  'max_depth': [3,5,10,20,50,75,100,None],
+                                  'max_features': ['auto','sqrt'],
+                                  'min_samples_leaf': [1,2,4,10],
+                                  'min_samples_split': [2,5,10]}
+                                  
+clf_rf_rnd = RandomizedSearchCV(rf, param_distributions = param_grid, n_iter = 100, cv = 5, verbose = True, n_jobs = -1)
+best_clf_rf_rnd = clf_rf_rnd.fit(X_train_scaled,y_train)
+clf_performance(best_clf_rf_rnd,'Random Forest')"""
+```
+```
+rf = RandomForestClassifier(random_state = 1)
+param_grid =  {'n_estimators': [400,450,500,550],
+               'criterion':['gini','entropy'],
+                                  'bootstrap': [True],
+                                  'max_depth': [15, 20, 25],
+                                  'max_features': ['auto','sqrt', 10],
+                                  'min_samples_leaf': [2,3],
+                                  'min_samples_split': [2,3]}
+                                  
+clf_rf = GridSearchCV(rf, param_grid = param_grid, cv = 5, verbose = True, n_jobs = -1)
+best_clf_rf = clf_rf.fit(X_train_scaled,y_train)
+clf_performance(best_clf_rf,'Random Forest')
+```
+```
+best_rf = best_clf_rf.best_estimator_.fit(X_train_scaled,y_train)
+feat_importances = pd.Series(best_rf.feature_importances_, index=X_train_scaled.columns)
+feat_importances.nlargest(20).plot(kind='barh')
+```
+```
+"""xgb = XGBClassifier(random_state = 1)
+
+param_grid = {
+    'n_estimators': [20, 50, 100, 250, 500,1000],
+    'colsample_bytree': [0.2, 0.5, 0.7, 0.8, 1],
+    'max_depth': [2, 5, 10, 15, 20, 25, None],
+    'reg_alpha': [0, 0.5, 1],
+    'reg_lambda': [1, 1.5, 2],
+    'subsample': [0.5,0.6,0.7, 0.8, 0.9],
+    'learning_rate':[.01,0.1,0.2,0.3,0.5, 0.7, 0.9],
+    'gamma':[0,.01,.1,1,10,100],
+    'min_child_weight':[0,.01,0.1,1,10,100],
+    'sampling_method': ['uniform', 'gradient_based']
+}
+
+#clf_xgb = GridSearchCV(xgb, param_grid = param_grid, cv = 5, verbose = True, n_jobs = -1)
+#best_clf_xgb = clf_xgb.fit(X_train_scaled,y_train)
+#clf_performance(best_clf_xgb,'XGB')
+clf_xgb_rnd = RandomizedSearchCV(xgb, param_distributions = param_grid, n_iter = 1000, cv = 5, verbose = True, n_jobs = -1)
+best_clf_xgb_rnd = clf_xgb_rnd.fit(X_train_scaled,y_train)
+clf_performance(best_clf_xgb_rnd,'XGB')"""
+```
+```
+xgb = XGBClassifier(random_state = 1)
+
+param_grid = {
+    'n_estimators': [450,500,550],
+    'colsample_bytree': [0.75,0.8,0.85],
+    'max_depth': [None],
+    'reg_alpha': [1],
+    'reg_lambda': [2, 5, 10],
+    'subsample': [0.55, 0.6, .65],
+    'learning_rate':[0.5],
+    'gamma':[.5,1,2],
+    'min_child_weight':[0.01],
+    'sampling_method': ['uniform']
+}
+
+clf_xgb = GridSearchCV(xgb, param_grid = param_grid, cv = 5, verbose = True, n_jobs = -1)
+best_clf_xgb = clf_xgb.fit(X_train_scaled,y_train)
+clf_performance(best_clf_xgb,'XGB')
+```
+```
+y_hat_xgb = best_clf_xgb.best_estimator_.predict(X_test_scaled).astype(int)
+xgb_submission = {'PassengerId': test.PassengerId, 'Survived': y_hat_xgb}
+submission_xgb = pd.DataFrame(data=xgb_submission)
+submission_xgb.to_csv('xgb_submission3.csv', index=False)
+```
+
+
+
 
 
 
